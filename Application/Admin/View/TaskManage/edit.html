@@ -1,0 +1,101 @@
+<extend name="Public/base"/>
+
+<block name="body">
+    <div class="main-title">
+        <h2>{:isset($info['id'])?'编辑':'新增'}任务</h2>
+    </div>
+    <form action="{:U()}" method="post" class="form-horizontal">
+        <div class="form-item">
+            <label class="item-label">任务类型</label>
+            <div class="controls">
+                <select name="type">
+                    <volist name="Menus" id="menu">
+                        <option value="{$menu.id}">{$menu.title_show}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">开始位置<span class="check-tips">（任务出发点，可以是多个）</span></label>
+            <div class="controls">
+                <input type="text" class="text" id="start_position_text" value="{$start_depart|default='请选择位置'}" onclick="open_iframe(1);">
+                <input type="hidden" class="text" id="start_position" name="start_position" value="{$info.start_position|default='0'}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">目标位置<span class="check-tips">（任务目标点，可以是多个）</span></label>
+            <div class="controls">
+                <input type="text" class="text" id="end_position_text" value="{$end_depart|default='请选择位置'}" onclick="open_iframe(2);">
+                <input type="hidden" class="text" id="end_position" name="end_position" value="{$info.end_position|default='0'}">
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">执行部门</label>
+            <div class="controls">
+                <select name="dept" id="dept" onchange="ajax_dept();">
+                    <volist name="dept" id="v">
+                        <option value="{$v.id}">{$v.title_show}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="item-label">执行人</label>
+            <div class="controls">
+                <select name="uid" id="uid">
+                    <option value="">无</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-item">
+            <input type="hidden" name="id" value="{$info.id|default=''}">
+            <button class="btn submit-btn ajax-post" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+            <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+        </div>
+    </form>
+</block>
+
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/layer.js"></script>
+    <script type="text/javascript">
+        Think.setValue("type", {$info.pid|default = 0});
+        Think.setValue("uid", {$info.dept|default = 0});
+        //导航高亮
+        highlight_subnav('{:U('index')}');
+
+        function open_iframe(n){
+            var arrId = '';
+            if(n == 1){
+                 arrId = $('#start_position').val();
+            }else{
+                 arrId = $('#end_position').val();
+            }
+            var url = "{:U('iframe?id=')}";
+            var arr = url.split(".");
+            url = arr[0]+'.'+arr[1]+'/id/'+arrId+'/n/'+n+'.html';
+
+            layer.open({
+                type: 2,
+                area: ['700px', '450px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: url
+            });
+        }
+
+        function ajax_dept(){
+            $.post('{:U("ajax")}',{id:$('#dept').val()},function (result) {
+                console.log(result);
+                if(result){
+                    var str = '<option value="">请选择</option>';
+                    $.each(result,function(index,value){
+                        str += '<option value='+value.id+'>'+value.username+'</option>';
+                    });
+                    $('#uid').html(str);
+                } else {
+                    layer.alert('请求错误',{icon: 2});
+                }
+            },'json');
+        }
+    </script>
+</block>

@@ -1,0 +1,52 @@
+<div class="code_box code_skin0">
+    <div class="form-item">
+        <div class="controls">
+            <volist name="depart_info" id="v">
+                <label class="radio">
+                    <input type="checkbox" name="positions" value="{$v.id}" <in name="v.id" value="$arr_id">checked</in> ><span>{$v.name}</span>
+                </label>
+            </volist>
+        </div>
+    </div>
+</div>
+
+<div class="layui-layer-btn layui-layer-btn-">
+    <input type="hidden" id="n" value="{$n}">
+    <a class="layui-layer-btn0" id="transmit">确 定</a>
+    <a class="layui-layer-btn1" id="closeIframe">返 回</a>
+</div>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
+<![endif]--><!--[if gte IE 9]><!-->
+<script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
+<!--<![endif]-->
+<script type="text/javascript" src="__STATIC__/layer.js"></script>
+<script type="text/javascript">
+    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+    //给父页面传值
+    $('#transmit').on('click', function(){
+        var n = $('#n').val();
+        var id=[];
+        var text=[];
+        $('input[name="positions"]:checked').each(function(){
+            id.push($(this).val());
+            text.push($(this).next().text());
+        });
+
+        id = id.join(',');
+        text = text.join(',');
+        if(n == 1){
+            parent.$('#start_position_text').val(text);
+            parent.$('#start_position').val(id);
+        }else{
+            parent.$('#end_position_text').val(text);
+            parent.$('#end_position').val(id);
+        }
+        parent.layer.close(index);
+    });
+    //关闭iframe
+    $('#closeIframe').click(function(){
+        parent.layer.close(index);
+    });
+</script>
