@@ -42,12 +42,13 @@ class TaskManageModel extends Model{
     }
 
     public function get_no(){
-        $id = 'T'.rand(100,999).rand(100,999);
-        return $id;
+        $no = $this->max('no');
+        return 'T'.sprintf("%06d", intval(substr($no,1,6))+1);
     }
 
     public function get_dept(){
-        $no = $this->max('no');
-        return $no+1;
+        $auth = session('user_auth');
+        $menber = M('UcenterInfo')->where(['uid'=>$auth['uid']])->find();
+        return $menber['dept'];
     }
 }
